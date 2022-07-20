@@ -6,7 +6,10 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build-ui": "rm -rf build && cd ../example_notes_app_frontend && npm run build && cp -r build ../backend_notes_example/",
+    "deploy": "git push heroku main",
+    "logs:prod": "heroku logs --tail"
   },
   "author": "MisterOz93",
   "license": "MIT",
