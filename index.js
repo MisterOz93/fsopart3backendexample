@@ -51,9 +51,7 @@ app.get('/api/notes', (req, res) => {
 })
 
 app.get('/api/notes/:id', (req, res) => {
-  const id = Number(req.params.id)
-  const note = notes.find(n => n.id === id)
-  note ? res.json(note) : res.status(404).end()
+  Note.findById(req.params.id).then(note => res.json(note))
 })
 
 app.delete('/api/notes/:id', (req, res) => {
