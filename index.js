@@ -1,7 +1,10 @@
+//before continuing in FSO, change the POST route to work w/ DB
+
 require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
 const Note = require('./models/note')
+const { response } = require('express')
 
 const app = express()
 app.use(express.json())
@@ -59,14 +62,6 @@ app.delete('/api/notes/:id', (req, res) => {
   res.status(204).end()
 })
 
-const generateId = () => {
-  //method for generating id not recommended, will change soon
-  return notes.length > 0 
-    ? Math.max(...notes.map(n => n.id)) + 1
-    : 0
-  
-}
-
 app.post('/api/notes', (req, res) => {
 
   if (!req.body.content){
@@ -75,14 +70,15 @@ app.post('/api/notes', (req, res) => {
       )
   }
 
-  const note = {
+  const note = new Note({
     content: req.body.content,
     important: req.body.important || false,
     date: new Date(),
-    id: generateId()
-  }
-  notes.concat(note)
-  res.json(note)
+  })
+
+  note.save().then(savedNote => {
+    res.json(savedNote)
+  })
 })
 
 const unknownEndpoint = (req, res) => {

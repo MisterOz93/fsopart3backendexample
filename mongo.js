@@ -1,13 +1,8 @@
+//practice file to learn mongo basics
+require('dotenv').config()
+
 const mongoose = require('mongoose')
 
-if (process.argv.length < 3){
-  console.log('Please provide the mongo password as an argument: node mongo.js <password>');
-  process.exit(1)
-}
-
-const password = process.argv[2]
-
-const url = `mongodb+srv://MisterOz93:${password}@cluster0.vediu.mongodb.net/noteApp?retryWrites=true&w=majority`
 
 const noteSchema = new mongoose.Schema({
   content: String,
@@ -16,6 +11,7 @@ const noteSchema = new mongoose.Schema({
 })
 
 const Note = mongoose.model('Note', noteSchema)
+const url = process.env.MONGO_URI
 
 mongoose.connect(url).then((result) => {
   console.log('mongo connected');
