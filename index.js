@@ -1,15 +1,13 @@
-//before continuing in FSO, change the POST route to work w/ DB
-
 require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
 const Note = require('./models/note')
-const { response } = require('express')
-
 const app = express()
+
+app.use(express.static('build'))
 app.use(express.json())
 app.use(cors())
-app.use(express.static('build'))
+
 
 let notes = [
   {
@@ -50,8 +48,17 @@ app.get('/api/notes', (req, res) => {
   Note.find({}).then(notes => res.json(notes))
 })
 
-app.get('/api/notes/:id', (req, res) => {
-  Note.findById(req.params.id).then(note => res.json(note))
+app.get('/api/notes/:id', (req, res, next) => {
+  Note.findById(req.params.id)
+    .then(note => {
+      if (note){
+        res.json(note)
+      }
+      else {
+        res.status(404).end()
+      }
+    })
+    .catch(error => next(error))
 })
 
 app.delete('/api/notes/:id', (req, res) => {
@@ -83,7 +90,16 @@ const unknownEndpoint = (req, res) => {
   res.status(404).send({error: "unknown endpoint"})
 }
 
+const errorHandler = (error, req, res, next) => {
+  console.error(error.message)
+  if (error.name === 'CastError'){
+    return res.status(400).send({ error: "Malformatted ID"})
+  }
+  next(error)
+}
+
 app.use(unknownEndpoint)
+app.use(errorHandler)
 
 
 const PORT = process.env.PORT
